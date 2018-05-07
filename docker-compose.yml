@@ -1,0 +1,62 @@
+version: '3.3'
+
+services:
+  web:
+    image: httpd
+    ports:
+      - "80:80"
+    depends_on:
+      - "fluentd"
+    logging:
+      driver: "fluentd"
+      options:
+        tag: httpd.access
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.4
+    ports:
+      - "9200:9200"
+    networks:
+      - intraservice
+    volumes:
+      - localswarmesdata:/usr/share/elasticsearch/data
+  kibana:
+    image: docker.elastic.co/kibana/kibana-oss:6.2.4
+    depends_on:
+      - "elasticsearch" 
+    ports:
+      - "5601:5601"
+    networks:
+      - intraservice
+    volumes:
+      - ./kibana/conf/kibana.yml:/usr/share/kibna/config/kibana.yml
+  fluentd:
+    image: jayground/fluentd
+    depends_on:
+      - "elasticsearch"
+    volumes:
+      - ./fluentd/conf:/fluentd/etc
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    networks:
+      - intraservice
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    networks:
+      - intraservice
+networks:
+  intraservice:
+    driver: overlay
+    ipam:
+      driver: default
+
+volumes:
+  localswarmesdata:
+     driver: local

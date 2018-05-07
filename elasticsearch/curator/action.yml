@@ -1,0 +1,17 @@
+actions:
+  1:
+    action: delete_indices
+    description: clear old logging data in local swarm
+    options:
+      ignore_empty_list: True
+      disable_action: False
+    filters:
+    - filtertype: pattern
+      kind: prefix
+      value: local-swarm-log-
+    - filtertype: age
+      source: name
+      direction: older
+      timestring: '%Y%m%d'
+      unit: seconds
+      unit_count: 2
