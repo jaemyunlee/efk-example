@@ -216,3 +216,37 @@ logging:
      options:
         tag: httpd.access
 ```
+
+### Contraints
+
+```
+deploy:
+  placement:
+    constraints:
+      - Node.ID==o51kflqvnmxunzkfr106c5g4w
+```
+
+## Trouble shootings
+
+### nexus private repository
+
+how to push
+
+`$ docker build -t image_tag_name .`
+
+`$ docker images`
+
+`$ docker tag {image_id} {nexus_host:port}/{name}:{version}`
+
+`$ docker push {nexus_host:port}/{name}:{version}`
+
+how to pull
+
+`$ docker login {nexus_host:port} -u {id} -p {password}`
+
+`$ docker pull {nexus_host:port}/{name}:{version}`
+
+compose up with nexus private repository
+
+`$ docker stack deploy --with-registry-auth -c docker-compose.yml {stack_name}`
+
