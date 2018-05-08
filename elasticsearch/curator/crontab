@@ -1,0 +1,5 @@
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=root
+
+0 0 * * * root curator --config /usr/share/elasticsearch/curator.yml /usr/share/elasticsearch/action.yml

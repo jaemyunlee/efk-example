@@ -12,13 +12,20 @@ services:
       options:
         tag: httpd.access
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.4
+    image: jayground/elasticsearch
     ports:
       - "9200:9200"
     networks:
       - intraservice
+    deploy:
+      placement:
+        constraints:
+          - Node.ID==o51kflqvnmxunzkfr106c5g4w
     volumes:
       - localswarmesdata:/usr/share/elasticsearch/data
+      - ./elasticsearch/curator/curator.yml:/usr/share/elasticsearch/curator.yml
+      - ./elasticsearch/curator/action.yml:/usr/share/elasticsearch/action.yml
+      - ./elasticsearch/curator/crontab:/etc/crontab
   kibana:
     image: docker.elastic.co/kibana/kibana-oss:6.2.4
     depends_on:

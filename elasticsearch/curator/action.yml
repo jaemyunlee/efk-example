@@ -13,5 +13,5 @@ actions:
       source: name
       direction: older
       timestring: '%Y%m%d'
-      unit: seconds
+      unit: days
       unit_count: 2

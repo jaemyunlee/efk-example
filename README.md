@@ -10,7 +10,10 @@ Environment : Mac
 
 ### step 2. Create a docker image.
 
-`$ docker build -t jayground/fluentd -f ./fluentd/Dockerfile .`
+```
+$ docker build -t jayground/fluentd -f ./fluentd/Dockerfile .
+$ docker build -t jayground/fluentd -f ./fluentd/Dockerfile .
+```
 
 you can check images you just made.
 
@@ -44,10 +47,17 @@ Discover logs in Kibana
 
 you can see new log in Kibana.
 
-### step 6. deletes logs with Elastic Curator.
+### step 6. deletes logs with Elastic Curator manually.
 
-```$ pip install elasticsearch-curator
-$ curator --config /usr/share/elasticsearch/curator.yml /usr/share/elasticsearch/action.yml
+```
+$ docker ps
+CONTAINER ID    IMAGE
+34e7455b9c61    jayground/elasticsearch:latest
+```
+
+```
+$ docker exec -it 34e bash
+# curator --config /usr/share/elasticsearch/curator.yml /usr/share/elasticsearch/action.yml
 
 INFO      Deleting selected indices: [u'local-swarm-log-20180507']
 INFO      ---deleting index local-swarm-log-20180507
@@ -65,10 +75,18 @@ unit: days
 unit_count: 2
 ``` 
 
-7. setup cron job to empty logs regularly.
+### step 7. setup cron job to empty logs regularly.
+
+It already set up cronjob and mount on a docker container. It should run at every midnight in the elasticsearch container.
 
 ```
-$ crontab -e
+# elasticsearch/curator/crontab
+
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=root
+
+0 0 * * * root curator --config /usr/share/elasticsearch/curator.yml /usr/share/elasticsearch/action.yml
 ```
 
 ## Elasticsearch 6.2.4
